@@ -1,4 +1,4 @@
-from logging import Logger, StreamHandler, Formatter, FileHandler, getLogger
+import logging
 import os
 from pathlib import Path
 import random
@@ -16,11 +16,12 @@ def set_seed(seed: int = 1029):
     torch.backends.cudnn.deterministic = True
 
 
-def setup_logger(logger: Logger, log_file_path: str):
-    handler = StreamHandler()
+def setup_logger(logger: logging.Logger, log_file_path: str):
+    handler = logging.StreamHandler()
     handler.setLevel('INFO')
     logger.addHandler(handler)
+    logger.setLevel('DEBUG')
 
-    handler = FileHandler(log_file_path, mode='w')
+    handler = logging.FileHandler(log_file_path, mode='w')
     handler.setLevel('DEBUG')
     logger.addHandler(handler)
