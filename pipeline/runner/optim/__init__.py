@@ -4,6 +4,7 @@ from torch import nn, optim
 from torch.optim import lr_scheduler
 
 from ...config import Config
+from ...utils import get_subclass_map
 
 
 def build_optimizer(config: Config, model: nn.Module) -> optim.Optimizer:
@@ -11,10 +12,8 @@ def build_optimizer(config: Config, model: nn.Module) -> optim.Optimizer:
     assert config.optimizer.name is not None
     assert config.optimizer.params is not None
 
-    registry = {
-        **optim.__dict__
-    }
-    obj = registry[config.optimizer.name]
+    optimizers = get_subclass_map(optim.Optimizer)
+    obj = optimizers[config.optimizer.name]
     return obj(model.parameters(), **config.optimizer.params)
 
 
@@ -38,16 +37,14 @@ def build_scheduler(
     lr_scheduler._LRScheduler
         A scheduler which is updated on every batch end.
     """
-    registry = {
-        **lr_scheduler.__dict__
-    }
+    schedulers = get_subclass_map(lr_scheduler._LRScheduler)
 
     # epoch scheduler
     if config.epoch_scheduler is not None:
         assert config.epoch_scheduler.name is not None
         assert config.epoch_scheduler.params is not None
         
-        obj = registry[config.epoch_scheduler.name]
+        obj = schedulers[config.epoch_scheduler.name]
         epoch_scheduler = obj(optimizer, **config.epoch_scheduler.params)
     
     else:
@@ -58,7 +55,7 @@ def build_scheduler(
         assert config.batch_scheduler.name is not None
         assert config.batch_scheduler.params is not None
 
-        obj = registry[config.batch_scheduler.name]
+        obj = schedulers[config.batch_scheduler.name]
         batch_scheduler = obj(optimizer, **config.batch_scheduler.params)
     
     else:

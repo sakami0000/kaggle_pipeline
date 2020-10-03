@@ -2,9 +2,10 @@ from argparse import ArgumentParser
 from logging import getLogger
 from pathlib import Path
 
-from src.config import load_config
-from src.data_bundle import build_data_bundle
-from src.runner import build_runner
+from pipeline.config import load_config
+from pipeline.data_bundle import build_data_bundle
+from pipeline.runner import build_runner
+
 from src.utils import set_seed, setup_logger
 
 

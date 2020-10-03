@@ -1,5 +1,5 @@
 from abc import ABCMeta, abstractmethod
-from typing import Any, Generator
+from typing import Any, Iterator
 
 from ..config import Config
 
@@ -28,7 +28,7 @@ class BaseDataBundle(metaclass=ABCMeta):
         raise NotImplementedError
 
     @abstractmethod
-    def generate_folds_data(self) -> Generator[Any, None, None]:
+    def generate_folds_data(self) -> Iterator[Any]:
         raise NotImplementedError
 
     @property
