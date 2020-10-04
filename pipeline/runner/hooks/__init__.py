@@ -10,11 +10,11 @@ import sklearn.metrics
 
 from . import post_forward_hook
 from .hooks import Hooks
-from .registry_hook import _Registry
+from .registry import _RunnerRegistry
 from ...config import Config
 from ...utils import get_subclass_map
 
-registry = _Registry()
+runner_registry = _RunnerRegistry()
 
 
 def build_hooks(config: Config) -> Hooks:
@@ -31,8 +31,8 @@ def _build_loss(config: Config) -> Callable[[torch.Tensor, torch.Tensor], torch.
     assert config.loss.name is not None
 
     # loss function
-    if config.loss.name in registry.loss_functions:
-        func = registry.loss_functions[config.loss.name]
+    if config.loss.name in runner_registry.loss_functions:
+        func = runner_registry.loss_functions[config.loss.name]
         if config.loss.params is not None:
             func = functools.partial(func, **config.loss.params)
         return func
@@ -49,7 +49,7 @@ def _build_metric(config: Config) -> Callable[[np.ndarray, np.ndarray], float]:
     assert config.metric is not None
     assert config.metric.name is not None
 
-    func = registry.metric_functions[config.metric.name]
+    func = runner_registry.metric_functions[config.metric.name]
     if config.metric.params is not None:
         func = functools.partial(func, **config.metric.params)
     return func
@@ -62,7 +62,7 @@ def _build_post_forward(config: Config) -> Callable[[torch.Tensor], torch.Tensor
     else:
         assert config.post_forward.name is not None
 
-        func = registry.post_forward_functions[config.post_forward.name]
+        func = runner_registry.post_forward_functions[config.post_forward.name]
         if config.post_forward.params is not None:
             func = functools.partial(func, **config.post_forward.params)
         return func

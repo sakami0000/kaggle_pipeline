@@ -1,3 +1,4 @@
+from logging import getLogger
 from pathlib import Path
 import time
 from typing import Tuple
@@ -14,6 +15,8 @@ from .models import build_model
 from .optim import build_optimizer, build_scheduler
 from ..config import Config
 from ..data_bundle.base import BaseDataBundle
+
+logger = getLogger('__main__')
 
 
 class TorchRunner(BaseRunner):
@@ -38,17 +41,17 @@ class TorchRunner(BaseRunner):
 
     def run(self, data_bundle: BaseDataBundle):
         self.initialize()
-        self.config.logger.info('***** Running training *****')
-        self.config.logger.info(f'  Num examples = {len(data_bundle)}')
-        self.config.logger.info(f'  Num Epochs = {self.config.n_epochs}')
-        self.config.logger.info(f'  Batch size = {self.config.train_data_loader.batch_size}')
-        self.config.logger.info(f'  Gradient Accumulation steps = {self.config.gradient_accumulation_steps}')
+        logger.info('***** Running training *****')
+        logger.info(f'  Num examples = {len(data_bundle)}')
+        logger.info(f'  Num Epochs = {self.config.n_epochs}')
+        logger.info(f'  Batch size = {self.config.train_data_loader.batch_size}')
+        logger.info(f'  Gradient Accumulation steps = {self.config.gradient_accumulation_steps}')
 
         for fold, (train_loader, valid_loader) in enumerate(data_bundle.generate_folds_data()):
-            self.config.logger.info(f'\n============================ fold {fold + 1} ============================')
-            self.config.logger.info('|         |------- train -------|------- valid -------|        |')
-            self.config.logger.info('|  epoch  |   loss   |  metric  |   loss   |  metric  |  time  |')
-            self.config.logger.info('|--------------------------------------------------------------|')
+            logger.info(f'\n============================ fold {fold + 1} ============================')
+            logger.info('|         |------- train -------|------- valid -------|        |')
+            logger.info('|  epoch  |   loss   |  metric  |   loss   |  metric  |  time  |')
+            logger.info('|--------------------------------------------------------------|')
             self.fold_initialize()
             self.train_single_fold(fold, train_loader, valid_loader)
             self.save_states(fold)
@@ -78,7 +81,7 @@ class TorchRunner(BaseRunner):
                 'valid_score': valid_score
             })
             epoch_elapsed_time = time.time() - epoch_start_time
-            self.config.logger.info(
+            logger.info(
                 f'| {epoch:<3.0f}     '
                 f'| {train_loss:<1.6f} '
                 f'| {train_score:<1.6f} '

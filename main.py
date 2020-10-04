@@ -24,7 +24,6 @@ def main():
     set_seed(config.seed)
     logger = getLogger(__name__)
     setup_logger(logger, output_dir / 'log.txt')
-    config.logger = logger
 
     # load data
     data_bundle = build_data_bundle(config)

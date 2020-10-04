@@ -9,7 +9,31 @@ import torch.nn.functional as F
 from . import post_forward_hook
 
 
-class _Registry(object):
+class _RunnerRegistry(object):
+    """Stores training functions.
+    The function registered here can be used by specifying in the config file.
+    This class is already instantiated as "runner_registry"
+    and all functions are read from this object.
+
+    See Also
+    --------
+    pipeline.data_bundle.features.registry._FeatureRegistry
+
+    Examples
+    --------
+    1. Define function and register it in "runner_registry".
+
+        >>> from pipeline import runner_registry
+        >>>
+        >>> @runner_registry.register_loss
+        ... def mse_loss(pred, target):
+        ...     return torch.mean((target - pred) ** 2)
+
+    2. Specify the defined function in cofiguration file.
+
+        >>> loss:
+        >>>   name: mse_loss
+    """
 
     def __init__(self):
         self.loss_functions = dict(
@@ -32,6 +56,13 @@ class _Registry(object):
         self.post_forward_functions[function.__name__] = function
 
     def register(self, function: Callable):
+        """Register a function.
+
+        Parameters
+        ----------
+        function : Callable
+            The function to be registered.
+        """
         self.register_loss(function)
         self.register_metric(function)
         self.register_post_forward(function)
