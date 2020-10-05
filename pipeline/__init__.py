@@ -1,5 +1,6 @@
 from .data_bundle import build_data_bundle
 from .data_bundle.base import BaseDataBundle
+from .data_bundle.features import feature_registry
 
 from .runner import build_runner
 from .runner.base import BaseRunner

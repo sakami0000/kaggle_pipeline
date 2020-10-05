@@ -47,7 +47,7 @@ class _FeatureRegistry(object):
 
     Notes
     -----
-    The name of function should be same as the feature name.
+    The name of a function should be same as its feature name.
 
     Attributes
     ----------
@@ -65,7 +65,7 @@ class _FeatureRegistry(object):
 
     The default directory tree is like following:
 
-        cache_dir
+        cache_dir/
         ├── train_feature_dir/
         ├── test_feature_dir/
         └── function_dir/

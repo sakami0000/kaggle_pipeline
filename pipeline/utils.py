@@ -86,7 +86,7 @@ class timer(_DecoratorContextManager):
     def __call__(self, function):
         if self.message is None:
             self.message = function.__name__
-        super().__call__(function)
+        return super().__call__(function)
 
     def __enter__(self):
         self.start_time = time.time()
