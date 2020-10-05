@@ -38,6 +38,8 @@ def build_scheduler(
         A scheduler which is updated on every batch end.
     """
     schedulers = get_subclass_map(lr_scheduler._LRScheduler)
+    epoch_scheduler = None
+    batch_scheduler = None
 
     # epoch scheduler
     if config.epoch_scheduler is not None:
@@ -47,9 +49,6 @@ def build_scheduler(
         obj = schedulers[config.epoch_scheduler.name]
         epoch_scheduler = obj(optimizer, **config.epoch_scheduler.params)
     
-    else:
-        epoch_scheduler = None
-    
     # batch scheduler
     if config.batch_scheduler is not None:
         assert config.batch_scheduler.name is not None
@@ -58,7 +57,4 @@ def build_scheduler(
         obj = schedulers[config.batch_scheduler.name]
         batch_scheduler = obj(optimizer, **config.batch_scheduler.params)
     
-    else:
-        batch_scheduler = None
-
     return epoch_scheduler, batch_scheduler

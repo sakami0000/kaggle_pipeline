@@ -14,10 +14,10 @@ logger = getLogger('__main__')
 
 def load_pickle(
     path: Union[str, PosixPath, List[str], List[PosixPath]]
-) -> List[Union[None, pd.Series, pd.DataFrame]]:
+) -> Union[None, pd.Series, pd.DataFrame, List[Union[None, pd.Series, pd.DataFrame]]]:
     """Load pickle format file or files.
     Returns a list of pd.Series or pd.DataFrame which is the same length as input `path`.
-    If at least one of the indicated files doesn't exist, returns list of `None`.
+    If the specified file doesn't exist, returns `None`.
     """
     if isinstance(path, (str, PosixPath)):
         if Path(path).exists():
@@ -25,12 +25,12 @@ def load_pickle(
             gc.collect()
             return data
     else:
-        if all([p.exists() for p in path]):
-            data = [pd.read_pickle(p) for p in path]
-            gc.collect()
-            return data
-        else:
-            return [None] * len(path)
+        data = [
+            pd.read_pickle(p) if p.exists() else None
+            for p in path
+        ]
+        gc.collect()
+        return data
 
 
 class _FeatureRegistry(object):
@@ -63,12 +63,22 @@ class _FeatureRegistry(object):
     function_dir : pathlib.PosixPath
         Direcotry to save funciont definition.
 
-    The default directory tree is like following:
+    `cache_dir` is the parent directory of `train_feature_dir`, `test_feature_dir` and `function_dir`.
 
         cache_dir/
         ├── train_feature_dir/
         ├── test_feature_dir/
         └── function_dir/
+
+    The default directory tree is following:
+
+        ├── main.py
+        ├── pipeline/
+        └── input/
+            └── feature/                <-- `cache_dir`
+                ├── train_feature/      <-- `train_feature_dir`
+                ├── test_feature/       <-- `test_feature_dir`
+                └── function/           <-- `function_dir`
 
     Examples
     --------
@@ -178,7 +188,8 @@ class _FeatureRegistry(object):
             with timer(f'creating {file_name}'):
                 train_feature, test_feature = function(*args, **kwargs)
                 train_feature.to_pickle(train_file)
-                test_feature.to_pickle(test_file)
+                if test_feature is not None:
+                    test_feature.to_pickle(test_file)
 
                 if self.check_function_definition:
                     # cache function definition

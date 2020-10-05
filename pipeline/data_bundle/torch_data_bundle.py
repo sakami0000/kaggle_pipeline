@@ -26,7 +26,7 @@ class TorchDataBundle(BaseDataBundle):
         super().__init__(config)
         self.load_features()
         self.fold_indices = build_fold(config, self.train_x, self.train_y)
-        self.test_data = build_loader(self.config, self.test_x, mode='valid')
+        self.test_loader = build_loader(self.config, self.test_x, mode='valid')
 
     def load_features(self):
         assert self.config.features is not None
@@ -57,7 +57,14 @@ class TorchDataBundle(BaseDataBundle):
         gc.collect()
 
     def __len__(self) -> int:
-        return len(self.train_y)
+        """Returns number of training samples.
+
+        Returns
+        -------
+        int
+            Number of training samples.
+        """
+        return len(self.train_x)
 
     def generate_folds_data(self) -> Iterator[Tuple[DataLoader]]:
         for train_idx, valid_idx in self.fold_indices:

@@ -24,9 +24,6 @@ def build_fold(
     train_group = None
 
     if config.fold.groups is not None:
-        if config.fold.groups in train_x.columns:
-            train_group = train_x[config.fold.groups]
-        else:
-            train_group = load_feature(config.fold.groups)
+        train_group = load_feature(config.fold.groups)
         
     return fold.split(train_x, train_y, groups=train_group)
