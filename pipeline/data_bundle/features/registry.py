@@ -7,6 +7,7 @@ from typing import Callable, List, Union
 
 import pandas as pd
 
+from ...config import load_config
 from ...utils import timer
 
 logger = getLogger('__main__')
@@ -80,6 +81,11 @@ class _FeatureRegistry(object):
                 ├── test_feature/       <-- `test_feature_dir`
                 └── function/           <-- `function_dir`
 
+    These attributes can be changed by setting in `meta.yaml`.
+
+        >>> check_function_definition: false
+        >>> cache_dir: ./intermediate/features/
+
     Examples
     --------
     1. Define function and register it in "feature_registry".
@@ -99,15 +105,16 @@ class _FeatureRegistry(object):
     """
 
     def __init__(self):
+        self.config = load_config('meta.yaml')
         self.feature_functions = {}
-        self.check_function_definition = False
-        self._cache_dir = Path(__file__).parent / 'input/feature/'
+        self.check_function_definition = self.config.get('check_function_definition', False)
+        self._cache_dir = Path(self.config.get('cache_dir', './input/feature/'))
         self._set_cache_directories()
 
     def _set_cache_directories(self):
-        self._train_feature_dir = self._cache_dir / 'train_feature/'
-        self._test_feature_dir = self._cache_dir / 'test_feature/'
-        self._function_dir = self._cache_dir / 'function/'
+        self._train_feature_dir = Path(self.config.train_feature_dir.get('train_feature_dir', self._cache_dir / 'train_feature/'))
+        self._test_feature_dir = Path(self.config.test_feature_dir.get('test_feature_dir', self._cache_dir / 'test_feature/'))
+        self._function_dir = Path(self.config.function_dir.get('function_dir', self._cache_dir / 'function/'))
 
     def _make_cache_directories(self):
         self._train_feature_dir.mkdir(parents=True, exist_ok=True)

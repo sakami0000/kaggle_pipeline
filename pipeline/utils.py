@@ -93,5 +93,6 @@ class timer(_DecoratorContextManager):
         logger.info(f'[{self.message}] start.')
 
     def __exit__(self, exc_type: Any, exc_value: Any, traceback: Any) -> None:
-        elapsed_time = time.time() - self.start_time
-        logger.info(f'[{self.message}] done in {elapsed_time / 60:.1f} min.')
+        if exc_type is None:
+            elapsed_time = time.time() - self.start_time
+            logger.info(f'[{self.message}] done in {elapsed_time / 60:.1f} min.')

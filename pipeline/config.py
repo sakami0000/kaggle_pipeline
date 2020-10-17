@@ -1,3 +1,5 @@
+import copy
+from pathlib import Path
 import yaml
 
 
@@ -12,9 +14,18 @@ class Config(dict):
             return Config(value)
         return value
 
+    def __deepcopy__(self, memo=None):
+        """Prevent errors in the `copy.deepcopy` method.
+
+        Reference
+        ---------
+        - https://stackoverflow.com/questions/49901590/python-using-copy-deepcopy-on-dotdict
+        """
+        return Config(copy.deepcopy(dict(self), memo=memo))
+
 
 def load_config(config_path: str) -> Config:
-    """Load config file.
+    """Load config file. If specified file does not exists, returns empty Config.
 
     Parameters
     ----------
@@ -26,6 +37,9 @@ def load_config(config_path: str) -> Config:
     Config
         Configuration parameters.
     """
-    with open(config_path) as f:
-        config = Config(yaml.load(f))
-    return config
+    if Path(config_path).exists():
+        with open(config_path) as f:
+            config = Config(yaml.load(f))
+        return config
+    else:
+        return Config({})
