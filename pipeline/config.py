@@ -17,29 +17,29 @@ class Config(dict):
     def __deepcopy__(self, memo=None):
         """Prevent errors in the `copy.deepcopy` method.
 
-        Reference
-        ---------
+        References
+        ----------
         - https://stackoverflow.com/questions/49901590/python-using-copy-deepcopy-on-dotdict
         """
         return Config(copy.deepcopy(dict(self), memo=memo))
 
+    @classmethod
+    def load(cls, config_path: str) -> 'Config':
+        """Load from a config file.
 
-def load_config(config_path: str) -> Config:
-    """Load config file. If specified file does not exists, returns empty Config.
+        Parameters
+        ----------
+        config_path : str
+            Path to config file.
 
-    Parameters
-    ----------
-    config_path : str
-        Path to config file.
-
-    Returns
-    -------
-    Config
-        Configuration parameters.
-    """
-    if Path(config_path).exists():
-        with open(config_path) as f:
-            config = Config(yaml.load(f))
-        return config
-    else:
-        return Config({})
+        Returns
+        -------
+        Config
+            Configuration parameters.
+        """
+        if Path(config_path).exists():
+            with open(config_path) as f:
+                config = cls(yaml.safe_load(f))
+            return config
+        else:
+            raise ValueError(f'Configuration file {config_path} does not exist.')

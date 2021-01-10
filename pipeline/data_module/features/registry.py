@@ -7,7 +7,7 @@ from typing import Callable, List, Union
 
 import pandas as pd
 
-from ...config import load_config
+from ...config import Config
 from ...utils import timer
 
 logger = getLogger('__main__')
@@ -105,7 +105,7 @@ class _FeatureRegistry(object):
     """
 
     def __init__(self):
-        self.config = load_config('meta.yaml')
+        self.config = Config.load('meta.yaml')
         self.feature_functions = {}
         self.check_function_definition = self.config.get('check_function_definition', False)
         self._cache_dir = Path(self.config.get('cache_dir', './input/feature/'))
@@ -198,10 +198,9 @@ class _FeatureRegistry(object):
                 if test_feature is not None:
                     test_feature.to_pickle(test_file)
 
-                if self.check_function_definition:
-                    # cache function definition
-                    with open(function_file, 'w') as f:
-                        f.write(inspect.getsource(function))
+                # cache function definition
+                with open(function_file, 'w') as f:
+                    f.write(inspect.getsource(function))
 
             gc.collect()
             return train_feature, test_feature

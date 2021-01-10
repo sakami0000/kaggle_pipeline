@@ -2,8 +2,8 @@ from argparse import ArgumentParser
 from logging import getLogger
 from pathlib import Path
 
-from pipeline.config import load_config
-from pipeline.data_bundle import build_data_bundle
+from pipeline.config import Config
+from pipeline.data_module import build_data_module
 from pipeline.runner import build_runner
 
 from src.utils import set_seed, setup_logger
@@ -16,7 +16,7 @@ def main():
 
     # settings
     config_file = Path(args.config_file)
-    config = load_config(config_file)
+    config = Config.load(config_file)
 
     output_dir = Path(f'./output/{config_file.stem}/')
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -26,7 +26,7 @@ def main():
     setup_logger(logger, output_dir / 'log.txt')
 
     # load data
-    data_bundle = build_data_bundle(config)
+    data_bundle = build_data_module(config)
 
     # train
     runner = build_runner(config)

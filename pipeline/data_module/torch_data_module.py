@@ -6,15 +6,15 @@ import pandas as pd
 import torch
 from torch.utils.data import TensorDataset, DataLoader
 
-from .base import BaseDataBundle
+from .base import BaseDataModule
 from .data import build_loader
 from .features import load_feature
 from .folds import build_fold
 from ..config import Config
 
 
-class TorchDataBundle(BaseDataBundle):
-    """DataBundle class of PyTorch implementation.
+class TorchDataModule(BaseDataModule):
+    """DataModule class of PyTorch implementation.
 
     Parameters
     ----------

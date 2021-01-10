@@ -1,7 +1,7 @@
 from abc import ABCMeta, abstractmethod
 
 from ..config import Config
-from ..data_bundle.base import BaseDataBundle
+from ..data_module.base import BaseDataModule
 
 
 class BaseRunner(metaclass=ABCMeta):
@@ -17,7 +17,7 @@ class BaseRunner(metaclass=ABCMeta):
         self.config = config
 
     @abstractmethod
-    def run(self, data_bundle: BaseDataBundle):
+    def run(self, data_module: BaseDataModule):
         raise NotImplementedError
 
     @abstractmethod

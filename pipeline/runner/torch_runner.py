@@ -14,7 +14,7 @@ from .hooks import build_hooks
 from .models import build_model
 from .optim import build_optimizer, build_scheduler
 from ..config import Config
-from ..data_bundle.base import BaseDataBundle
+from ..data_module.base import BaseDataModule
 
 logger = getLogger('__main__')
 
@@ -39,15 +39,15 @@ class TorchRunner(BaseRunner):
         self.model_states = {}
         self.optimizer_states = {}
 
-    def run(self, data_bundle: BaseDataBundle):
+    def run(self, data_module: BaseDataModule):
         self.initialize()
         logger.info('***** Running training *****')
-        logger.info(f'  Num examples = {len(data_bundle)}')
+        logger.info(f'  Num examples = {len(data_module)}')
         logger.info(f'  Num Epochs = {self.config.n_epochs}')
         logger.info(f'  Batch size = {self.config.train_data_loader.batch_size}')
         logger.info(f'  Gradient Accumulation steps = {self.config.gradient_accumulation_steps}')
 
-        for fold, (train_loader, valid_loader) in enumerate(data_bundle.generate_folds_data()):
+        for fold, (train_loader, valid_loader) in enumerate(data_module.generate_folds_data()):
             logger.info(f'\n============================ fold {fold + 1} ============================')
             logger.info('|         |------- train -------|------- valid -------|        |')
             logger.info('|  epoch  |   loss   |  metric  |   loss   |  metric  |  time  |')
